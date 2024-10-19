@@ -1,0 +1,51 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: prod
+      secrets:
+        - backend-secrets
+    ports:
+      - 8000:8000
+    restart: always
+    depends_on:
+      - ollama
+    environment:
+      OLLAMA_URL: http://ollama:7869
+    networks:
+      - docker-network
+
+  ollama:
+    build:
+      context: .
+      dockerfile: ollama/Dockerfile
+    volumes:
+      - ollama-cache:/root/.ollama
+    pull_policy: always
+    tty: true
+    restart: unless-stopped
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0:7869
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - docker-network
+
+networks:
+  docker-network:
+    external: false
+
+volumes:
+  ollama-cache:
+    external: false
+
+secrets:
+  backend-secrets:
+    environment: BACKEND_SECRETS
