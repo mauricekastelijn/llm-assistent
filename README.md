@@ -31,8 +31,7 @@ The llm-assistant project is an intelligent personal assistant application that 
    ```
 
 3. Access the application:
-   - Frontend: http://localhost:3000
-   - Backend: http://localhost:8000
+   - Frontend: http://localhost:8000
 
 ## Devcontainer
 The project includes a devcontainer configuration for Visual Studio Code. This allows you to develop the project in a consistent environment with all necessary dependencies pre-installed.
