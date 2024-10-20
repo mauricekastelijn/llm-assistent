@@ -1,4 +1,8 @@
 # llm-assistant
+
+[![CI/CD Pipeline](https://github.com/mauricekastelijn/llm-assistant/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/mauricekastelijn/llm-assistant/actions/workflows/cicd.yml)
+[![Dependabot](https://github.com/mauricekastelijn/llm-assistant/actions/workflows/dependabot.yml/badge.svg?branch=main)](https://github.com/mauricekastelijn/llm-assistant/actions/workflows/dependabot.yml)
+
 Intelligent Personal Assistant application using LLMs and agents, based on the Langchain framework and Ollama backend
 
 ## Summary
