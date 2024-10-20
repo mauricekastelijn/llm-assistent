@@ -18,10 +18,6 @@ updates:
       interval: weekly
     commit-message:
       prefix: "build(deps): update "
-    groups:
-      devcontainers:
-        patterns:
-          - "*"
 
   - package-ecosystem: docker
     directories:
