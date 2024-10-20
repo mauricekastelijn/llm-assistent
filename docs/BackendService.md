@@ -191,7 +191,7 @@ scalability, maintainability, and reusability. The layers are:
 
 ## **Key Technologies and Considerations**
 
-- **Python 3.9+**
+- **Python 3.12+**
   - Utilize modern language features and typing enhancements.
 
 - **FastAPI**
