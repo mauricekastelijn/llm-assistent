@@ -1,5 +1,5 @@
-# llm-assistent
-Intelligent Personal Assistent application using LLMs and agents, based on the Langchain framework and Ollama backend
+# llm-assistant
+Intelligent Personal Assistant application using LLMs and agents, based on the Langchain framework and Ollama backend
 
 ## Summary
 The llm-assistant project is an intelligent personal assistant application that leverages Large Language Models (LLMs) and agents. It is built using the Langchain framework and Ollama backend. The project aims to provide a modular and scalable solution for personal assistant applications with generative AI capabilities.
