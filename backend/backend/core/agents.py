@@ -28,7 +28,13 @@ class PythonAgent(object):
     def __init__(self, model, python_tool):
         super().__init__()
         prompt = ChatPromptTemplate.from_template(
-            "Answer the user's query: {query}")
+            """
+            Answer the user's query, using the python_repl tool if needed.
+            Don't include python code in your answer.
+            Instead, execute it using the python_repl tool using a tool call.
+            Make sure to include the result in your final answer.
+            The user query is: {query}
+            """)
         agent = create_react_agent(model, [python_tool])
         self.chain = prompt | agent
 

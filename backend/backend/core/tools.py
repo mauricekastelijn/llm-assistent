@@ -31,8 +31,10 @@ class PythonREPLTool(Tool):
         super().__init__(
             name="python_repl",
             description="""
-            A Python shell. Use this to execute python commands.
-            Input should be a valid python command.
+            A Python repl. Use this to execute python scripts.
+            Input should be a valid python command or script.
+            Beware of syntax errors!
+            Only use built-in python functions and libraries.
             If you want to see the output of a value,
             you should print it out with `print(...)`.
             """,
