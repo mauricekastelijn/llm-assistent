@@ -19,3 +19,12 @@ async def get_events(context: Context, location: str, date: str):
     logger.info(f"Events response: {response}")
 
     return response
+
+
+async def get_query_result(context: Context, query: str):
+    logger.info(f"Answering the query: {query}")
+    agent = context.agents.get_agents()['python_agent']
+    response = await agent.ainvoke(query)
+    logger.info(f"Query response: {response}")
+
+    return response

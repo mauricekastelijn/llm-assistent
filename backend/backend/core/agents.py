@@ -24,12 +24,29 @@ class EventsAgent(object):
         return result["messages"][-1].content
 
 
+class PythonAgent(object):
+    def __init__(self, model, python_tool):
+        super().__init__()
+        prompt = ChatPromptTemplate.from_template(
+            "Answer the user's query: {query}")
+        agent = create_react_agent(model, [python_tool])
+        self.chain = prompt | agent
+
+    async def ainvoke(self, query):
+        logger.info(f"PythonAgent: Answering query: {query}")
+        result = await self.chain.ainvoke(query)
+        logger.info(f"PythonAgent: Query response: {result}")
+        return result["messages"][-1].content
+
+
 class AgentRegistry(object):
     def __init__(self, models: ModelRegistry, tools: ToolRegistry):
         logger.info("Initializing agents...")
         self.agents = {}
         self.agents['events_agent'] = EventsAgent(
             models.get_chat_model(), tools.get_search_tool())
+        self.agents['python_agent'] = PythonAgent(
+            models.get_chat_model(), tools.get_python_tool())
 
     def get_agents(self):
         return self.agents

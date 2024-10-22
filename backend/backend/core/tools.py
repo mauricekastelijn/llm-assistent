@@ -1,8 +1,10 @@
+import os
 
+from langchain_core.tools import Tool
+from langchain_experimental.utilities import PythonREPL
 from langchain_community.tools import TavilySearchResults
 
 from utils.logger import logger
-import os
 
 
 class TavilySearchTool(TavilySearchResults):
@@ -24,14 +26,32 @@ class TavilySearchTool(TavilySearchResults):
         )
 
 
+class PythonREPLTool(Tool):
+    def __init__(self):
+        super().__init__(
+            name="python_repl",
+            description="""
+            A Python shell. Use this to execute python commands.
+            Input should be a valid python command.
+            If you want to see the output of a value,
+            you should print it out with `print(...)`.
+            """,
+            func=PythonREPL().run,
+        )
+
+
 class ToolRegistry(object):
     def __init__(self):
         logger.info("Initializing tools...")
         self.tools = {}
-        self.tools['tavily_search'] = TavilySearchTool()
+        self.tools["tavily_search"] = TavilySearchTool()
+        self.tools["python_repl"] = PythonREPLTool()
 
     def get_tools(self):
         return self.tools
 
     def get_search_tool(self):
-        return self.tools['tavily_search']
+        return self.tools["tavily_search"]
+
+    def get_python_tool(self):
+        return self.tools["python_repl"]
