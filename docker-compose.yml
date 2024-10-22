@@ -12,7 +12,7 @@ services:
     depends_on:
       - ollama
     environment:
-      OLLAMA_URL: http://ollama:7869
+      OLLAMA_ENDPOINT: http://ollama:7869
     networks:
       - docker-network
 
