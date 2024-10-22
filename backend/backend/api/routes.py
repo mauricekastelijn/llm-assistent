@@ -4,9 +4,11 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse
 
 from core.context import Context
-from services.business_logic import get_joke, get_events
+from services.business_logic import get_joke, get_events, get_query_result
 from utils.logger import logger
-from .schemas import JokeRequestSchema, EventsRequestSchema, ResponseSchema
+from .schemas import \
+    JokeRequestSchema, QueryRequestSchema, \
+    EventsRequestSchema, ResponseSchema
 
 api_router = APIRouter()
 
@@ -17,6 +19,15 @@ async def joke_request(
 ) -> ResponseSchema:
     logger.info(f"Called endpoint /joke with request: {request}")
     response = await get_joke(context, request.text)
+    return {"text": response}
+
+
+@api_router.post("/query")
+async def query_request(
+    request: QueryRequestSchema, context: Annotated[Context, Depends()]
+) -> ResponseSchema:
+    logger.info(f"Called endpoint /query with request: {request}")
+    response = await get_query_result(context, request.text)
     return {"text": response}
 
 
@@ -41,6 +52,9 @@ async def read_root():
         <h1>Joke Generator</h1>
         <input type="text" id="jokeInputText" placeholder="Enter your text here">
         <button onclick="tellJoke()">Tell Joke</button>
+        <h1>Query Python agent</h1>
+        <input type="text" id="queryText" placeholder="Enter your query here">
+        <button onclick="query()">Query</button>
         <h1>Find events</h1>
         <input type="text" id="locationInputText" placeholder="Enter your location here">
         <input type="text" id="dateInputText" placeholder="Enter your date here">
@@ -55,6 +69,20 @@ async def read_root():
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ text: jokeInputText })
+                });
+                const data = await response.json();
+                document.getElementById('responseText').innerText = data.text;
+            }
+        </script>
+        <script>
+            async function query() {
+                const queryText = document.getElementById('queryText').value;
+                const response = await fetch('/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: queryText })
                 });
                 const data = await response.json();
                 document.getElementById('responseText').innerText = data.text;
