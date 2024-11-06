@@ -3,8 +3,6 @@ from .tools import ToolRegistry
 from .chains import ChainRegistry
 from .agents import AgentRegistry
 
-from utils.logger import logger
-
 
 class Context(object):
     # Define this class as a singleton

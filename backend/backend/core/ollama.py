@@ -12,7 +12,8 @@ class OllamaBackend(object):
         self._pull_models()
 
     def _pull_models(self):
-        logger.info(f"Pulling Ollama model '{settings.OLLAMA_MODEL}' at endpoint '{settings.OLLAMA_ENDPOINT}' ...")
+        logger.info(f"Pulling Ollama model '{settings.OLLAMA_MODEL}' at endpoint '{
+                    settings.OLLAMA_ENDPOINT}' ...")
         with httpx.Client() as client:
             response = client.post(
                 f"{settings.OLLAMA_ENDPOINT}/api/pull",
@@ -24,3 +25,9 @@ class OllamaBackend(object):
     def get_chat_model(self):
         return ChatOllama(model=settings.OLLAMA_MODEL,
                           base_url=settings.OLLAMA_ENDPOINT)
+
+    def get_chat_model_json(self):
+        return ChatOllama(model=settings.OLLAMA_MODEL,
+                          base_url=settings.OLLAMA_ENDPOINT,
+                          format="json",
+                          temperature=0.1)

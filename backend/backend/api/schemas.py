@@ -1,10 +1,6 @@
 from pydantic import BaseModel
 
 
-class JokeRequestSchema(BaseModel):
-    text: str
-
-
 class QueryRequestSchema(BaseModel):
     text: str
 
