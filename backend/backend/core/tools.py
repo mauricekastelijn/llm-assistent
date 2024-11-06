@@ -16,7 +16,7 @@ class TavilySearchTool(TavilySearchResults):
             max_results=5,
             search_depth="advanced",
             include_answer=True,
-            include_raw_content=False,
+            include_raw_content=True,
             include_images=False,
             # include_domains=[...],
             # exclude_domains=[...],
@@ -25,13 +25,19 @@ class TavilySearchTool(TavilySearchResults):
             # args_schema=...,       # overwrite default args_schema: BaseModel
         )
 
+    async def ainvoke_tool_call_artifact(self, query):
+        results = await self.ainvoke(
+            {"args": {'query': query}, "type": "tool_call", "id": "foo", "name": "tavily"})
+        return results.artifact
+
 
 class PythonREPLTool(Tool):
     def __init__(self):
         super().__init__(
             name="python_repl",
             description="""
-            A Python repl. Use this to execute python scripts.
+            A Python repl tool to execute python scripts.
+            Use this to perform computations or solve problems through programming.
             Input should be a valid python command or script.
             Beware of syntax errors!
             Only use built-in python functions and libraries.

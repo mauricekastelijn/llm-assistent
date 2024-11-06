@@ -15,6 +15,10 @@ ENV PYTHONUNBUFFERED=1
 COPY res/Cisco_Umbrella_Root_CA.cer /usr/local/share/ca-certificates/Cisco_Umbrella_Root_CA.crt
 RUN update-ca-certificates
 
+# Fix SSL 443 error
+# See https://stackoverflow.com/questions/62952004/local-issuer-certificate-error-uniquely-in-docker-with-python
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+
 # Install pip requirements
 COPY backend/requirements.txt .
 RUN python -m pip install -r requirements.txt
