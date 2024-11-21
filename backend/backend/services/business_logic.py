@@ -13,7 +13,7 @@ async def get_test_result(context: Context, subject: str):
     summary_chain = context.chains.get_chains()['summary_chain']
 
     knowledge = []
-    for iter in range(2):
+    for iter in range(1):
         queries = await adjacent_chain.ainvoke(subject, 4,
                                                knowledge="\n".join(knowledge))
         responses = []
