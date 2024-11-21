@@ -130,12 +130,12 @@ async def read_root():
     </style>
 </head>
 <body>
-    <h1>Test Result</h1>
-    <input type="text" id="testInputText" placeholder="Enter your text here">
-    <button onclick="getTestOutput()">Test</button>
+    <h1>Research assistant</h1>
+    <input type="text" id="testInputText" placeholder="Enter your topic here">
+    <button onclick="getTestOutput()">Research</button>
 
     <h1>Joke Generator</h1>
-    <input type="text" id="jokeInputText" placeholder="Enter your text here">
+    <input type="text" id="jokeInputText" placeholder="Enter your subject here">
     <button onclick="tellJoke()">Tell Joke</button>
 
     <h1>Query Python Agent</h1>
