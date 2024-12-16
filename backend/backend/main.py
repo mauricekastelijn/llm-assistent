@@ -3,13 +3,14 @@ from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 
-from api.routes import api_router
+from api.routes import api_router, gradio_routes
 from core.context import Context
 from utils.logger import logger
 
 from uuid import uuid4
-import os
 
+import gradio as gr
+import os
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,3 +34,6 @@ app = FastAPI(title="Personal Assistant Backend", lifespan=lifespan)
 
 # Include API routes
 app.include_router(api_router)
+
+# Mount Gradio routes
+app = gr.mount_gradio_app(app, gradio_routes, path="/gradio")

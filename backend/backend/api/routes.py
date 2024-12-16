@@ -9,6 +9,9 @@ from services.business_logic import \
 from utils.logger import logger
 from .schemas import QueryRequestSchema, EventsRequestSchema, ResponseSchema
 
+import gradio as gr
+
+
 api_router = APIRouter()
 
 
@@ -233,3 +236,62 @@ async def read_root():
 </html>
     """
     return HTMLResponse(content=html_content)
+
+
+async def research_assistant(text):
+    response = await get_test_result(Context(), text)
+    return response
+
+
+async def joke_generator(text):
+    response = await get_joke(Context(), text)
+    return response
+
+
+async def query_python_agent(text):
+    response = await get_query_result(Context(), text)
+    return response
+
+
+async def find_events(location, date):
+    response = await get_events(Context(), location, date)
+    return response
+
+
+with gr.Blocks() as gradio_routes:
+    gr.Markdown("# Research Assistant")
+    with gr.Row():
+        with gr.Column():
+            research_input = gr.Textbox(label="Enter your topic here")
+            research_button = gr.Button("Research")
+        with gr.Column():
+            research_output = gr.Textbox(label="Response")
+    research_button.click(research_assistant, inputs=research_input, outputs=research_output)
+
+    gr.Markdown("# Joke Generator")
+    with gr.Row():
+        with gr.Column():
+            joke_input = gr.Textbox(label="Enter your subject here")
+            joke_button = gr.Button("Tell Joke")
+        with gr.Column():
+            joke_output = gr.Textbox(label="Response")
+    joke_button.click(joke_generator, inputs=joke_input, outputs=joke_output)
+
+    gr.Markdown("# Query Python Agent")
+    with gr.Row():
+        with gr.Column():
+            query_input = gr.Textbox(label="Enter your query here")
+            query_button = gr.Button("Query")
+        with gr.Column():
+            query_output = gr.Textbox(label="Response")
+    query_button.click(query_python_agent, inputs=query_input, outputs=query_output)
+
+    gr.Markdown("# Find Events")
+    with gr.Row():
+        with gr.Column():
+            location_input = gr.Textbox(label="Enter your location here")
+            date_input = gr.Textbox(label="Enter your date here")
+            events_button = gr.Button("Get Events")
+        with gr.Column():
+            events_output = gr.Textbox(label="Response")
+    events_button.click(find_events, inputs=[location_input, date_input], outputs=events_output)
