@@ -10,6 +10,7 @@ The llm-assistant project is an intelligent personal assistant application that 
 
 ## Features
 - Web-based frontend for user interaction
+   - Including a Gradio-based frontend for interactive user interfaces
 - Hosted backend with agentic functionalities using LLMs
 - Integration with Langchain framework for building and managing agents
 - Local LLM hosting with Ollama in Docker containers
@@ -36,6 +37,7 @@ The llm-assistant project is an intelligent personal assistant application that 
 
 3. Access the application:
    - Frontend: http://localhost:8000
+   - Gradio Frontend: http://localhost:8000/gradio
 
 ## Devcontainer
 The project includes a devcontainer configuration for Visual Studio Code. This allows you to develop the project in a consistent environment with all necessary dependencies pre-installed.
