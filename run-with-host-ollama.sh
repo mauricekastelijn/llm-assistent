@@ -17,7 +17,7 @@ echo Using code base root path $ROOT_PATH
 
 docker compose -f $SCRIPT_PATH/docker-compose-dev.yml build backend
 docker compose -f $SCRIPT_PATH/docker-compose-dev.yml run -it --rm \
-    --env OLLAMA_ENDPOINT="http://host.docker.internal:11434" \
+    --env OLLAMA_ENDPOINT="http://172.17.0.1:11434" \
     -p 8000:8000 \
     -v "$ROOT_PATH/backend/backend/:/home/backend" \
     -v "$ROOT_PATH/secrets/backend/.env:/home/backend/secrets/.env" \
