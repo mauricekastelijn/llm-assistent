@@ -12,3 +12,9 @@ class EventsRequestSchema(BaseModel):
 
 class ResponseSchema(BaseModel):
     text: str
+
+
+class GitHubCommentRequestSchema(BaseModel):
+    repo: str
+    pr_number: int
+    comment: str

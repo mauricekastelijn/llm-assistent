@@ -66,3 +66,13 @@ async def get_query_result(context: Context, query: str):
     logger.info(f"Query response: {response}")
 
     return response
+
+
+async def add_github_comment(context: Context, repo: str, pr_number: int,
+                             request: str):
+    logger.info(f"Adding comment to PR #{pr_number} in repo {
+                repo}; request: {request}")
+    agent = context.agents.get_agents()['github_comment_agent']
+    response = await agent.ainvoke(repo, pr_number, request)
+    logger.info(f"GitHub comment response: {response}")
+    return response
