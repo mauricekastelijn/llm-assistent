@@ -3,13 +3,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse
 
+import gradio as gr
+
 from core.context import Context
 from services.business_logic import \
-    get_test_result, get_joke, get_events, get_query_result
+    get_test_result, get_joke, get_events, get_query_result, add_github_comment
 from utils.logger import logger
-from .schemas import QueryRequestSchema, EventsRequestSchema, ResponseSchema
-
-import gradio as gr
+from .schemas import QueryRequestSchema, EventsRequestSchema, ResponseSchema, GitHubCommentRequestSchema
 
 
 api_router = APIRouter()
@@ -48,6 +48,15 @@ async def events_request(
 ) -> ResponseSchema:
     logger.info(f"Called endpoint /events with request: {request}")
     response = await get_events(context, request.location, request.date)
+    return {"text": response}
+
+
+@api_router.post("/github_comment")
+async def github_comment_request(
+    request: GitHubCommentRequestSchema, context: Annotated[Context, Depends()]
+) -> ResponseSchema:
+    logger.info(f"Called endpoint /github_comment with request: {request}")
+    response = await add_github_comment(context, request.repo, request.pr_number, request.comment)
     return {"text": response}
 
 
@@ -150,6 +159,12 @@ async def read_root():
     <input type="text" id="dateInputText" placeholder="Enter your date here">
     <button onclick="getEvents()">Get Events</button>
 
+    <h1>GitHub Comment</h1>
+    <input type="text" id="repoInputText" placeholder="Enter the repository here">
+    <input type="text" id="prNumberInputText" placeholder="Enter the pull request number here">
+    <input type="text" id="commentInputText" placeholder="Enter your comment here">
+    <button onclick="addGitHubComment()">Add Comment</button>
+
     <div class="response-container">
         <div id="responseText">Your response will appear here...</div>
         <div class="controls">
@@ -231,6 +246,21 @@ async def read_root():
             const data = await response.json();
             document.getElementById('responseText').innerText = data.text;
         }
+
+        async function addGitHubComment() {
+            const repoInputText = document.getElementById('repoInputText').value;
+            const prNumberInputText = document.getElementById('prNumberInputText').value;
+            const commentInputText = document.getElementById('commentInputText').value;
+            const response = await fetch('/github_comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ repo: repoInputText, pr_number: prNumberInputText, comment: commentInputText })
+            });
+            const data = await response.json();
+            document.getElementById('responseText').innerText = data.text;
+        }
     </script>
 </body>
 </html>
@@ -258,17 +288,24 @@ async def find_events(location, date):
     return response
 
 
+async def github_comment(repo, pr_number, request):
+    response = await add_github_comment(Context(), repo, pr_number, request)
+    return response
+
+
 with gr.Blocks() as gradio_routes:
-    gr.Markdown("# Research Assistant")
+    gr.Markdown("# LLM Assistant demo")
+    gr.Markdown("## Research Assistant")
     with gr.Row():
         with gr.Column():
             research_input = gr.Textbox(label="Enter your topic here")
             research_button = gr.Button("Research")
         with gr.Column():
             research_output = gr.Textbox(label="Response")
-    research_button.click(research_assistant, inputs=research_input, outputs=research_output)
+    research_button.click(research_assistant,
+                          inputs=research_input, outputs=research_output)
 
-    gr.Markdown("# Joke Generator")
+    gr.Markdown("## Joke Generator")
     with gr.Row():
         with gr.Column():
             joke_input = gr.Textbox(label="Enter your subject here")
@@ -277,16 +314,17 @@ with gr.Blocks() as gradio_routes:
             joke_output = gr.Textbox(label="Response")
     joke_button.click(joke_generator, inputs=joke_input, outputs=joke_output)
 
-    gr.Markdown("# Query Python Agent")
+    gr.Markdown("## Query Python Agent")
     with gr.Row():
         with gr.Column():
             query_input = gr.Textbox(label="Enter your query here")
             query_button = gr.Button("Query")
         with gr.Column():
             query_output = gr.Textbox(label="Response")
-    query_button.click(query_python_agent, inputs=query_input, outputs=query_output)
+    query_button.click(query_python_agent,
+                       inputs=query_input, outputs=query_output)
 
-    gr.Markdown("# Find Events")
+    gr.Markdown("## Find Events")
     with gr.Row():
         with gr.Column():
             location_input = gr.Textbox(label="Enter your location here")
@@ -294,4 +332,18 @@ with gr.Blocks() as gradio_routes:
             events_button = gr.Button("Get Events")
         with gr.Column():
             events_output = gr.Textbox(label="Response")
-    events_button.click(find_events, inputs=[location_input, date_input], outputs=events_output)
+    events_button.click(find_events, inputs=[
+                        location_input, date_input], outputs=events_output)
+
+    gr.Markdown("## GitHub Comment")
+    with gr.Row():
+        with gr.Column():
+            repo_input = gr.Textbox(label="Enter the repository here")
+            pr_number_input = gr.Textbox(
+                label="Enter the pull request number here")
+            request_input = gr.Textbox(label="Enter your comment request here")
+            github_comment_button = gr.Button("Add Comment")
+        with gr.Column():
+            github_comment_output = gr.Textbox(label="Response")
+    github_comment_button.click(github_comment, inputs=[
+                                repo_input, pr_number_input, request_input], outputs=github_comment_output)

@@ -1,4 +1,3 @@
-
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.prebuilt import create_react_agent
 
@@ -45,6 +44,30 @@ class PythonAgent(object):
         return result["messages"][-1].content
 
 
+class GitHubCommentAgent(object):
+    def __init__(self, model, github_tool):
+        super().__init__()
+        prompt = ChatPromptTemplate.from_template(
+            """
+            Add a comment to the GitHub pull request.
+            The repository is: {repo}
+            The pull request number is: {pr_number}
+            The request is: {request}
+
+            Use the github_comment tool to add the comment.
+            Formulate the comment text based on the request.
+            """)
+        agent = create_react_agent(model, [github_tool])
+        self.chain = prompt | agent
+
+    async def ainvoke(self, repo, pr_number, request):
+        logger.info(f"GitHubCommentAgent: Adding comment to PR #{pr_number} in repo {repo}")
+        data = {"repo": repo, "pr_number": pr_number, "request": request}
+        result = await self.chain.ainvoke(data)
+        logger.info(f"GitHubCommentAgent: Comment added to PR #{pr_number}")
+        return result["messages"][-1].content
+
+
 class AgentRegistry(object):
     def __init__(self, models: ModelRegistry, tools: ToolRegistry):
         logger.info("Initializing agents...")
@@ -53,6 +76,8 @@ class AgentRegistry(object):
             models.get_chat_model(), tools.get_search_tool())
         self.agents['python_agent'] = PythonAgent(
             models.get_chat_model(), tools.get_python_tool())
+        self.agents['github_comment_agent'] = GitHubCommentAgent(
+            models.get_chat_model(), tools.get_github_comment_tool())
 
     def get_agents(self):
         return self.agents
