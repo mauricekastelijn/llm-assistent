@@ -8,6 +8,8 @@ Intelligent Personal Assistant application using LLMs and agents, based on the L
 ## Summary
 The llm-assistant project is an intelligent personal assistant application that leverages Large Language Models (LLMs) and agents. It is built using the Langchain framework and Ollama backend. The project aims to provide a modular and scalable solution for personal assistant applications with generative AI capabilities.
 
+The project uses Docker Compose to manage multiple containers for the frontend, backend, and Ollama LLM hosting.
+
 ## Features
 - Web-based frontend for user interaction
    - Including a Gradio-based frontend for interactive user interfaces
@@ -20,8 +22,7 @@ The llm-assistant project is an intelligent personal assistant application that 
 ## Prerequisites
 - Docker and Docker Compose installed
 - Python 3.12+ installed
-- Node.js and npm installed
-- Visual Studio Code with Dev Containers extension
+- Visual Studio Code with Dev Containers extension (for development)
 
 ## Checking Out and Building the Project
 1. Clone the repository:
@@ -30,7 +31,7 @@ The llm-assistant project is an intelligent personal assistant application that 
    cd llm-assistant
    ```
 
-2. Build and start the Docker containers:
+2. Build and start the Docker containers (in production mode):
    ```bash
    docker-compose up --build
    ```
@@ -39,30 +40,34 @@ The llm-assistant project is an intelligent personal assistant application that 
    - Frontend: http://localhost:8000
    - Gradio Frontend: http://localhost:8000/gradio
 
-## Devcontainer
+## Development
+To start the development environment with hot reloading:
+```bash
+docker-compose -f docker-compose-dev.yml up --build
+```
+
+### Devcontainer
 The project includes a devcontainer configuration for Visual Studio Code. This allows you to develop the project in a consistent environment with all necessary dependencies pre-installed.
 
 To use the devcontainer:
 1. Open the project in Visual Studio Code.
 2. When prompted, click "Reopen in Container".
 
-## Docker Compose Usage
-The project uses Docker Compose to manage multiple containers for the frontend, backend, and Ollama LLM hosting.
-
-### Development
-To start the development environment with hot reloading:
-```bash
-docker-compose -f docker-compose-dev.yml up --build
-```
-
-### Production
-To start the production environment:
-```bash
-docker-compose up --build
-```
-
-## Hot Reloading in Development
+### Hot Reloading
 In development mode, the backend container is configured to support hot reloading by mounting volumes into the container. This allows changes to the code to be reflected immediately without restarting the container.
+
+### Run with Ollama instance running on the host machine
+Instead of the containerized Ollama instance, it is possible to use an Ollama instance running natively on the host machine.
+
+For Windows:
+```bash
+run-with-host-ollama.bat
+```
+
+For Linux:
+```bash
+run-with-host-ollama.sh
+```
 
 ## Secrets Management
 Secrets are provided to the containers using Docker secrets. In production builds, secrets are obtained from the environment. In development builds secrets are read from local files for convenience. Refer to docker-compose.yml and docker-compose-dev.yml for details. In both cases the secrets are mounted into the container. The Dockerfile ensures that the the secrets are copied to the correct locations in the container.
