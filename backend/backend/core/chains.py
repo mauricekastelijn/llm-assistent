@@ -12,10 +12,11 @@ from typing_extensions import List
 
 
 class JokeChain(object):
-    def __init__(self, model):
+    def __init__(self, models):
         super().__init__()
         prompt = ChatPromptTemplate.from_template(
             "tell me a joke about {subject}")
+        model = models.get_chat_model()
         self.chain = prompt | model | StrOutputParser()
 
     async def ainvoke(self, subject):
@@ -34,7 +35,7 @@ class AdjacentQueriesChain(object):
         """List of search queries adjacent to a common query."""
         queries: List[str]
 
-    def __init__(self, model):
+    def __init__(self, models):
         prompt = ChatPromptTemplate.from_template(
             """
             List {num_results} new adjacent search queries related to the query
@@ -56,9 +57,11 @@ class AdjacentQueriesChain(object):
             The existing knowledge is given below:
             {knowledge}
             """)
-        self.parser = PydanticOutputParser(
+        model = models.get_chat_model_json(
+            format=AdjacentQueriesChain.SearchQueryList.model_json_schema())
+        parser = PydanticOutputParser(
             pydantic_object=AdjacentQueriesChain.SearchQueryList)
-        self.chain = prompt | model | self.parser
+        self.chain = prompt | model | parser
 
     async def ainvoke(self, query, num_results, knowledge=None):
         logger.info(f"AdjacentQueriesChain: Getting queries for: {query}")
@@ -74,7 +77,7 @@ class AdjacentQueriesChain(object):
 
 class SummaryChain(object):
 
-    def __init__(self, model):
+    def __init__(self, models):
         prompt = ChatPromptTemplate.from_template(
             """
             Write an essay on the subject '{subject}' based on the knowledge
@@ -86,6 +89,7 @@ class SummaryChain(object):
             Your existing knowledge on the subject is given below:
             {knowledge}
             """)
+        model = models.get_chat_model()
         self.chain = prompt | model | StrOutputParser()
 
     async def ainvoke(self, subject, knowledge):
@@ -103,10 +107,9 @@ class ChainRegistry(object):
     def __init__(self, models: ModelRegistry, tools: ToolRegistry):
         logger.info("Initializing chains...")
         self.chains = {}
-        self.chains['joke_chain'] = JokeChain(models.get_chat_model())
-        self.chains['adjacent_queries_chain'] = AdjacentQueriesChain(
-            models.get_chat_model_json())
-        self.chains['summary_chain'] = SummaryChain(models.get_chat_model())
+        self.chains['joke_chain'] = JokeChain(models)
+        self.chains['adjacent_queries_chain'] = AdjacentQueriesChain(models)
+        self.chains['summary_chain'] = SummaryChain(models)
 
     def get_chains(self):
         return self.chains
