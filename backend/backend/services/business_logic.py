@@ -76,3 +76,11 @@ async def add_github_comment(context: Context, repo: str, pr_number: int,
     response = await agent.ainvoke(repo, pr_number, request)
     logger.info(f"GitHub comment response: {response}")
     return response
+
+
+async def review_github_pr(context: Context, repo: str, pr_number: int):
+    logger.info(f"Reviewing PR #{pr_number} in repo {repo}")
+    agent = context.agents.get_agents()['github_pullrequest_patch_review_agent']
+    response = await agent.ainvoke(repo, pr_number)
+    logger.info("GitHub PR review completed")
+    return response

@@ -15,4 +15,4 @@ class Context(object):
         self.models = ModelRegistry()
         self.tools = ToolRegistry()
         self.chains = ChainRegistry(self.models, self.tools)
-        self.agents = AgentRegistry(self.models, self.tools)
+        self.agents = AgentRegistry(self.models, self.tools, self.chains)
