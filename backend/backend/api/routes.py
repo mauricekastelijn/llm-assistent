@@ -7,7 +7,9 @@ import gradio as gr
 
 from core.context import Context
 from services.business_logic import \
-    get_test_result, get_joke, get_events, get_query_result, add_github_comment
+    get_test_result, get_joke, get_events, get_query_result, add_github_comment, \
+    review_github_pr
+
 from utils.logger import logger
 from .schemas import QueryRequestSchema, EventsRequestSchema, ResponseSchema, GitHubCommentRequestSchema
 
@@ -293,6 +295,11 @@ async def github_comment(repo, pr_number, request):
     return response
 
 
+async def github_pr(repo, pr_number):
+    response = await review_github_pr(Context(), repo, int(pr_number))
+    return response
+
+
 with gr.Blocks() as gradio_routes:
     gr.Markdown("# LLM Assistant demo")
     gr.Markdown("## Research Assistant")
@@ -346,4 +353,18 @@ with gr.Blocks() as gradio_routes:
         with gr.Column():
             github_comment_output = gr.Textbox(label="Response")
     github_comment_button.click(github_comment, inputs=[
-                                repo_input, pr_number_input, request_input], outputs=github_comment_output)
+                                repo_input, pr_number_input, request_input],
+                                outputs=github_comment_output)
+
+    gr.Markdown("## GitHub PR Review")
+    with gr.Row():
+        with gr.Column():
+            repo_input = gr.Textbox(label="Enter the repository here")
+            pr_number_input = gr.Textbox(
+                label="Enter the pull request number here")
+            github_comment_button = gr.Button("Review PR")
+        with gr.Column():
+            github_comment_output = gr.Textbox(label="Response")
+    github_comment_button.click(github_pr, inputs=[
+                                repo_input, pr_number_input],
+                                outputs=github_comment_output)
