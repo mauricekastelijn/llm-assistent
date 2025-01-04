@@ -147,11 +147,32 @@ For reference, the new code is given below:
         model = model.with_structured_output(self.ReviewCommentList)
         self.chain = prompt | model
 
-    def chunk_with_line_numbers(self, contents, start, end):
+    def chunk_with_line_numbers(self, contents, start, end, max_size=60, context_lines=10):
+        # Compute the start and end of the chunk, subject to:
+        # - The chunk size is at most `max_size` lines.
+        # - The chunk contains `context_lines` lines before and after the changed lines.
+
+        # Calculate the initial size of the chunk
+        size = min(max_size, end - start + 2 * context_lines)
+
+        # Get the total number of lines in the contents
+        content_length = len(contents.split("\n"))
+
+        # Adjust the start and end positions to include context lines
+        start = max(start - context_lines, 0)
+        end = min(end + context_lines, content_length)
+
+        # Calculate the center of the chunk
+        center = (start + end) // 2
+
+        # Compute the final chunk start and end positions
+        chunk_start = max(center - size // 2, 0)
+        chunk_end = min(center + size // 2, content_length)
+
         return "\n".join(
             [
                 f"{start+i+1}: {line}"
-                for i, line in enumerate(contents.split("\n")[start:end])
+                for i, line in enumerate(contents.split("\n")[chunk_start:chunk_end])
             ]
         )
 
@@ -160,9 +181,7 @@ For reference, the new code is given below:
             f"GitHubPullRequestPatchReviewChain: Reviewing code patch {
                 patch_content} from line {start} to {end}"
         )
-        chunk = self.chunk_with_line_numbers(
-            file_contents, max(start - 10, 0), end + 10
-        )
+        chunk = self.chunk_with_line_numbers(file_contents, start, end)
         try:
             result = await self.chain.ainvoke(
                 {
